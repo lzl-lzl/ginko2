@@ -1,0 +1,130 @@
+"use strict";
+
+const { PI, cos, sin, abs, random } = Math;
+const TAU = 2 * PI;
+const TO_RAD = PI / 180;
+const rand = n => n * random();
+const randRange = n => n - rand(2 * n);
+const fadeInOut = (t, m) => {
+	let hm = 0.5 * m;
+	return abs((t + hm) % m - hm) / (hm);
+};
+
+
+const MAX_SPRITES = 200;
+
+let canvas;
+let ctx;
+let origin;
+let sprite;
+let carrots;
+
+function getCarrot(x, y) {
+	return {
+		destroy: false,
+		position: [x, y],
+		direction: rand(TAU),
+		rotation: rand(TAU),
+		speed: rand(1) + 1,
+		rotSpeed: randRange(10) * TO_RAD,
+		scale: rand(0.025) + 0.01,
+		life: 0,
+		ttl: rand(100) + 100,
+		init() {
+			this.size = [
+				sprite.width * this.scale, 
+				sprite.height * this.scale
+			];
+			return this;
+		},
+		update() {
+			this.destroy = this.life++ > this.ttl;
+			this.rotation += this.rotSpeed;
+			this.rotSpeed *= 0.99;
+			this.size[0] *= 1.025;
+			this.size[1] *= 1.025;
+			this.speed *= 1.035;
+			this.position[0] += cos(this.direction) * this.speed;
+			this.position[1] += sin(this.direction) * this.speed;
+			return this;
+		},
+		draw() {
+			ctx.a.save();
+			ctx.a.globalAlpha = fadeInOut(this.life, this.ttl);
+			ctx.a.translate(this.position[0] - 0.5 * this.size[0], this.position[1] - 0.5 * this.size[1]);
+			ctx.a.rotate(this.rotation);
+			ctx.a.translate(-this.position[0] - 0.5 * this.size[0], -this.position[1] - 0.5 * this.size[1]);
+			ctx.a.drawImage(sprite, this.position[0], this.position[1], this.size[0], this.size[1]);
+			ctx.a.restore();
+			return this;
+		}
+	};
+}
+
+function setup() {
+	canvas = {
+		a: document.createElement("canvas"),
+		b: document.createElement("canvas")
+	};
+	canvas.b.style = `
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	`;
+	document.body.appendChild(canvas.b);
+	ctx = {
+		a: canvas.a.getContext("2d"),
+		b: canvas.b.getContext("2d")
+	};
+	origin = [];
+	carrots = [];
+	
+	resize();
+	
+
+	
+	sprite = new Image();
+	// sprite.src = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/544318/carrot.png";
+	rand(1)<.5?sprite.src = "C:\Users\f\Desktop\tree1.png":sprite.src = "C:\Users\f\Desktop\tree2.png"
+	// sprite.src = "C:\Users\f\Desktop\tree1.png";
+	sprite.onload = () => {
+		draw();
+	};
+}
+
+function resize() {
+	const { innerWidth, innerHeight } = window;
+	
+	canvas.a.width = canvas.b.width = innerWidth;
+	canvas.a.height = canvas.b.height = innerHeight;
+	
+	origin[0] = 0.5 * innerWidth;
+	origin[1] = 0.5 * innerHeight;
+}
+
+function draw() {
+	carrots.length < MAX_SPRITES && carrots.push(getCarrot(...origin).init());
+	
+	ctx.a.clearRect(0, 0, canvas.a.width, canvas.a.height);
+	ctx.b.clearRect(0, 0, canvas.a.width, canvas.a.height)
+	
+	let i, carrot;
+	
+	for (i = carrots.length - 1; i >= 0; i--) {
+		carrots[i].update().draw().destroy && carrots.splice(i, 1);
+	}
+	
+	ctx.b.save();
+	ctx.b.filter = 'blur(8px) saturate(200%) brightness(200%)';
+	ctx.b.drawImage(canvas.a, 0, 0);
+	ctx.b.restore();
+	
+	ctx.b.drawImage(canvas.a, 0, 0);
+	
+	window.requestAnimationFrame(draw);
+}
+
+window.addEventListener("load", setup);
+window.addEventListener("resize", resize);

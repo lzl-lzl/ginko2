@@ -1,0 +1,96 @@
+html, body {
+  width: 100vw;
+  height: 100vh;
+  /* background: radial-gradient(#BF360C, #3E2723);  */
+  background: radial-gradient(#f32424, #3E2723);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#codepen-link {
+  position: absolute;
+  bottom: 20px;
+  right: 30px;
+  height: 40px;
+  width: 40px;
+  z-index: 10;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/544318/logo.jpg");
+  background-position: center center;
+  background-size: cover;
+  opacity: 0.4;
+  transition: all 0.25s;
+}
+#codepen-link:hover {
+  opacity: 0.8;
+  box-shadow: 0 0 6px #efefef;
+}
+
+@-webkit-keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.headline {
+  margin: 20px;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+}
+.headline h1 {
+  letter-spacing: 1.6px;
+  font-weight: 300;
+}
+
+.twitterLink {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 10px 15px;
+  z-index: 3;
+}
+.twitterLink svg {
+  width: 25px;
+}
+
+.credit {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  color: white;
+  text-decoration: none;
+}
+.text-js {
+  opacity: 0;
+}
+
+.cursor {
+  display: none;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  right: -5px;
+  width: 2px;
+  /* Change colour of Cursor Here */
+  background-color: white;
+  z-index: 1;
+  -webkit-animation: flash 0.5s none infinite alternate;
+          animation: flash 0.5s none infinite alternate;
+}
